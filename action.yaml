@@ -1,0 +1,53 @@
+name: terraform-fmt-check
+description: Fail the job when any Terraform file is not in canonical format
+author: 'step-security'
+
+inputs:
+  # --- what to check ---
+  path:
+    description: Directory to check, searched recursively. Defaults to the workspace root.
+    required: false
+    default: "."
+
+  # --- version discovery ---
+  # These describe how to reach a remote backend when working out which Terraform
+  # version to use. Formatting reads files from disk and never contacts a backend,
+  # so they are accepted for interface compatibility and otherwise unused. Set the
+  # TERRAFORM_VERSION environment variable to choose a version explicitly.
+  workspace:
+    description: >-
+      Accepted for compatibility with the wider Terraform action suite. Formatting
+      does not consult a workspace, so this has no effect.
+    required: false
+    default: "default"
+  backend_config:
+    description: >-
+      Accepted for compatibility with the wider Terraform action suite. Formatting
+      does not contact a backend, so this has no effect.
+    required: false
+    default: ""
+  backend_config_file:
+    description: >-
+      Accepted for compatibility with the wider Terraform action suite. Formatting
+      does not contact a backend, so this has no effect.
+    required: false
+    default: ""
+
+outputs:
+  failure_reason:
+    description: >-
+      Set to `check-failed` when the job failed because files need reformatting.
+      Left unset when the job fails for any other reason, so it can gate a
+      follow-up step with an `if:` expression.
+  failure-reason:
+    description: >-
+      Hyphenated spelling of `failure_reason`, carrying the same value. Both are
+      published so either name can be referenced.
+
+runs:
+  using: node24
+  main: dist/index.js
+
+branding:
+  icon: globe
+  color: purple
